@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/fatih/color"
-	out "github.com/rockwang465/go-gitlab-client/cli/output"
-	"github.com/rockwang465/go-gitlab-client/gitlab"
+	out "github.com/rockwang465/gitlab-client/cli/output"
+	"github.com/rockwang465/gitlab-client/gitlab"
 	"github.com/spf13/cobra"
 )
 

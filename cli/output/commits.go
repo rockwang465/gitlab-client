@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/rockwang465/go-gitlab-client/gitlab"
+	"github.com/rockwang465/gitlab-client/gitlab"
 )
 
 func Commits(w io.Writer, format string, collection *gitlab.CommitCollection) {

@@ -3,7 +3,7 @@ STACK_NAME      = gogitlab
 WIREMOCK_IMAGE  = ekino/wiremock:2.7.1
 GO_IMAGE        = golang:1.10.3
 MODD_VERSION    = 0.5
-GO_PKG_SRC_PATH = "github.com/rockwang465/go-gitlab-client"
+GO_PKG_SRC_PATH = "github.com/rockwang465/gitlab-client"
 
 OS   = $(shell uname)
 

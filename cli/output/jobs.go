@@ -6,7 +6,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
-	"github.com/rockwang465/go-gitlab-client/gitlab"
+	"github.com/rockwang465/gitlab-client/gitlab"
 	"github.com/plouc/textree"
 	"io"
 )

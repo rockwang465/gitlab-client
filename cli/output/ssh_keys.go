@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/rockwang465/go-gitlab-client/gitlab"
+	"github.com/rockwang465/gitlab-client/gitlab"
 	"io"
 )
 

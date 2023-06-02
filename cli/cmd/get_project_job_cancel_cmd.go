@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/fatih/color"
-	out "github.com/rockwang465/go-gitlab-client/cli/output"
+	out "github.com/rockwang465/gitlab-client/cli/output"
 	"github.com/spf13/cobra"
 )
 

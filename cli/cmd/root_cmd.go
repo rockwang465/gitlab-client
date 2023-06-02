@@ -8,7 +8,7 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
-	"github.com/rockwang465/go-gitlab-client/gitlab"
+	"github.com/rockwang465/gitlab-client/gitlab"
 	"github.com/spf13/cobra"
 )
 

@@ -3,7 +3,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/rockwang465/go-gitlab-client/test"
+	"github.com/rockwang465/gitlab-client/test"
 )
 
 func TestListGroupsCmd(t *testing.T) {

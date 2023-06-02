@@ -23,7 +23,7 @@ It also provides an handy CLI to easily interact with gitlab API.
 To install go-gitlab-client, use `go get`:
 
 ```
-go get github.com/rockwang465/go-gitlab-client/gitlab
+go get github.com/rockwang465/gitlab-client/gitlab
 ```
 
 Import the `go-gitlab-client` package into your code:
@@ -32,7 +32,7 @@ Import the `go-gitlab-client` package into your code:
 package whatever
 
 import (
-    "github.com/rockwang465/go-gitlab-client/gitlab"
+    "github.com/rockwang465/gitlab-client/gitlab"
 )
 ```
 
@@ -40,11 +40,11 @@ import (
 
 To update `go-gitlab-client`, use `go get -u`:
 
-    go get -u github.com/rockwang465/go-gitlab-client/gitlab
+    go get -u github.com/rockwang465/gitlab-client/gitlab
 
 ### Documentation
 
-Visit the docs at http://godoc.org/github.com/rockwang465/go-gitlab-client/gitlab
+Visit the docs at http://godoc.org/github.com/rockwang465/gitlab-client/gitlab
 
 ### Supported APIs
 
@@ -308,7 +308,7 @@ Visit the docs at http://godoc.org/github.com/rockwang465/go-gitlab-client/gitla
 ### install CLI
 
 **glc** is a single binary with no external dependencies, released for several platforms.
-Go to the [releases page](https://github.com/rockwang465/go-gitlab-client/releases),
+Go to the [releases page](https://github.com/rockwang465/gitlab-client/releases),
 download the package for your OS, and copy the binary to somewhere on your PATH.
 Please make sure to rename the binary to `glc` and make it executable.
 

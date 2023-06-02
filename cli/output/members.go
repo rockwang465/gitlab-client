@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/rockwang465/go-gitlab-client/gitlab"
+	"github.com/rockwang465/gitlab-client/gitlab"
 )
 
 func Members(w io.Writer, format string, collection *gitlab.MemberCollection) {
