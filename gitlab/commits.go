@@ -2,236 +2,94 @@ package gitlab
 
 import (
 	"encoding/json"
-	"io"
-	"strconv"
+	"time"
 )
+
+// GitLab API docs: https://docs.gitlab.com/ee/api/commits.html
 
 const (
-	ProjectCommitsApiPath             = "/projects/:id/repository/commits"
-	ProjectMergeRequestCommitsApiPath = "/projects/:id/merge_requests/:merge_request_iid/commits"
-	ProjectCommitApiPath              = "/projects/:id/repository/commits/:sha"
-	ProjectCommitDiffApiPath          = "/projects/:id/repository/commits/:sha/diff"
-	ProjectCommitRefsApiPath          = "/projects/:id/repository/commits/:sha/refs"
-	ProjectCommitStatusesApiPath      = "/projects/:id/repository/commits/:sha/statuses"
+	ProjectCommitStatusesApiPath = "/projects/:id/repository/commits/:sha/statuses"
+	CreateCommitApiPath          = "/projects/:id/repository/commits"
 )
 
-type MinimalCommit struct {
-	Id           string `json:"id" yaml:"id"`
-	ShortId      string `json:"short_id" yaml:"short_id"`
-	Title        string `json:"title" yaml:"title"`
-	Message      string `json:"message" yaml:"message"`
-	AuthorName   string `json:"author_name" yaml:"author_name"`
-	AuthorEmail  string `json:"author_email" yaml:"author_email"`
-	CreatedAtRaw string `json:"created_at" yaml:"created_at"`
+type CommitStatus struct {
+	Status       string     `json:"status"`
+	CreatedAt    time.Time  `json:"created_at"`
+	StartedAt    *time.Time `json:"started_at"`
+	Name         string     `json:"name"`
+	AllowFailure bool       `json:"allow_failure"`
+	Author       User       `json:"author"`
+	Description  *string    `json:"description"`
+	Sha          string     `json:"sha"`
+	TargetURL    string     `json:"target_url"`
+	FinishedAt   *time.Time `json:"finished_at"`
+	ID           int        `json:"id"`
+	Ref          string     `json:"ref"`
 }
 
-func (c *MinimalCommit) RenderJson(w io.Writer) error {
-	return renderJson(w, c)
+// CreateCommitOptions represents the available options for a new commit.
+//
+// GitLab API docs: https://docs.gitlab.com/ce/api/commits.html#create-a-commit-with-multiple-files-and-actions
+type CreateCommitOptions struct {
+	Branch        *string                `url:"branch,omitempty" json:"branch,omitempty"`
+	CommitMessage *string                `url:"commit_message,omitempty" json:"commit_message,omitempty"`
+	StartBranch   *string                `url:"start_branch,omitempty" json:"start_branch,omitempty"`
+	StartSHA      *string                `url:"start_sha,omitempty" json:"start_sha,omitempty"`
+	StartProject  *string                `url:"start_project,omitempty" json:"start_project,omitempty"`
+	Actions       []*CommitActionOptions `url:"actions" json:"actions"`
+	AuthorEmail   *string                `url:"author_email,omitempty" json:"author_email,omitempty"`
+	AuthorName    *string                `url:"author_name,omitempty" json:"author_name,omitempty"`
+	Stats         *bool                  `url:"stats,omitempty" json:"stats,omitempty"`
+	Force         *bool                  `url:"force,omitempty" json:"force,omitempty"`
 }
 
-func (c *MinimalCommit) RenderYaml(w io.Writer) error {
-	return renderYaml(w, c)
+// CommitActionOptions represents the available options for a new single
+// file action.
+//
+// GitLab API docs: https://docs.gitlab.com/ce/api/commits.html#create-a-commit-with-multiple-files-and-actions
+type CommitActionOptions struct {
+	Action          *string `url:"action,omitempty" json:"action,omitempty"`               // The action to perform: create, delete, move, update, chmod
+	FilePath        *string `url:"file_path,omitempty" json:"file_path,omitempty"`         // Full path to the file. Ex. lib/class.rb
+	PreviousPath    *string `url:"previous_path,omitempty" json:"previous_path,omitempty"` // Original full path to the file being moved. Ex. lib/class1.rb. Only considered for move action.
+	Content         *string `url:"content,omitempty" json:"content,omitempty"`             // File content, required for all except delete, chmod, and move. Move actions that do not specify content preserve the existing file content, and any other value of content overwrites the file content.
+	Encoding        *string `url:"encoding,omitempty" json:"encoding,omitempty"`
+	LastCommitID    *string `url:"last_commit_id,omitempty" json:"last_commit_id,omitempty"`
+	ExecuteFilemode *bool   `url:"execute_filemode,omitempty" json:"execute_filemode,omitempty"` // When true/false enables/disables the execute flag on the file. Only considered for chmod action.
 }
 
-type MinimalCommitCollection struct {
-	Items []*MinimalCommit
-}
-
-func (c *MinimalCommitCollection) RenderJson(w io.Writer) error {
-	return renderJson(w, c.Items)
-}
-
-func (c *MinimalCommitCollection) RenderYaml(w io.Writer) error {
-	return renderYaml(w, c.Items)
-}
-
-type Commit struct {
-	MinimalCommit    `yaml:",inline"`
-	AuthoredDateRaw  string   `json:"authored_date" yaml:"authored_date"`
-	CommitterName    string   `json:"committer_name" yaml:"committer_name"`
-	CommitterEmail   string   `json:"committer_email" yaml:"committer_email"`
-	CommittedDateRaw string   `json:"committed_date" yaml:"committed_date"`
-	ParentIds        []string `json:"parent_ids" yaml:"parent_ids"`
-	Status           string   `json:"status,omitempty" yaml:"status,omitempty"`
-	Stats            struct {
-		Additions int `json:"additions" yaml:"additions"`
-		Deletions int `json:"deletions" yaml:"deletions"`
-		Total     int `json:"total" yaml:"total"`
-	} `json:"stats,omitempty" yaml:"stats,omitempty"`
-	LastPipeline struct {
-		Id     int    `json:"id" yaml:"id"`
-		Ref    string `json:"ref" yaml:"ref"`
-		Sha    string `json:"sha" yaml:"sha"`
-		Status string `json:"status" yaml:"status"`
-	} `json:"last_pipeline,omitempty" yaml:"last_pipeline,omitempty"`
-}
-
-func (c *Commit) RenderJson(w io.Writer) error {
-	return renderJson(w, c)
-}
-
-func (c *Commit) RenderYaml(w io.Writer) error {
-	return renderYaml(w, c)
-}
-
-type CommitCollection struct {
-	Items []*Commit
-}
-
-func (c *CommitCollection) RenderJson(w io.Writer) error {
-	return renderJson(w, c.Items)
-}
-
-func (c *CommitCollection) RenderYaml(w io.Writer) error {
-	return renderYaml(w, c.Items)
-}
-
-type CommitsOptions struct {
-	PaginationOptions
-
-	// The file path
-	Path string `url:"path,omitempty"`
-
-	// Only commits after or on this date will be returned in ISO 8601 format YYYY-MM-DDTHH:MM:SSZ
-	Since string `url:"since,omitempty"`
-
-	// Only commits before or on this date will be returned in ISO 8601 format YYYY-MM-DDTHH:MM:SSZ
-	Until string `url:"until,omitempty"`
-
-	// Retrieve every commit from the repository
-	All bool `url:"all,omitempty"`
-
-	// Stats about each commit will be added to the response
-	WithStats bool `url:"with_stats,omitempty"`
-}
-
-func (g *Gitlab) ProjectCommits(projectId string, o *CommitsOptions) (*CommitCollection, *ResponseMeta, error) {
-	u := g.ResourceUrlQ(ProjectCommitsApiPath, map[string]string{
-		":id": projectId,
-	}, o)
-
-	collection := new(CommitCollection)
-
-	contents, meta, err := g.buildAndExecRequest("GET", u.String(), nil)
-	if err == nil {
-		err = json.Unmarshal(contents, &collection.Items)
-	}
-
-	return collection, meta, err
-}
-
-func (g *Gitlab) ProjectMergeRequestCommits(projectId string, mergeRequestIid int, o *PaginationOptions) (*MinimalCommitCollection, *ResponseMeta, error) {
-	u := g.ResourceUrlQ(ProjectMergeRequestCommitsApiPath, map[string]string{
-		":id":                projectId,
-		":merge_request_iid": strconv.Itoa(mergeRequestIid),
-	}, o)
-
-	collection := new(MinimalCommitCollection)
-
-	contents, meta, err := g.buildAndExecRequest("GET", u.String(), nil)
-	if err == nil {
-		err = json.Unmarshal(contents, &collection.Items)
-	}
-
-	return collection, meta, err
-}
-
-func (g *Gitlab) ProjectCommit(projectId, commitSha string) (*Commit, *ResponseMeta, error) {
-	u := g.ResourceUrl(ProjectCommitApiPath, map[string]string{
-		":id":  projectId,
-		":sha": commitSha,
+func (g *Gitlab) ProjectCommitStatuses(id, sha1 string) ([]*CommitStatus, *ResponseMeta, error) {
+	u := g.ResourceUrl(ProjectCommitStatusesApiPath, map[string]string{
+		":id":  id,
+		":sha": sha1,
 	})
 
-	commit := new(Commit)
+	statuses := make([]*CommitStatus, 0)
 
 	contents, meta, err := g.buildAndExecRequest("GET", u.String(), nil)
-	if err == nil {
-		err = json.Unmarshal(contents, &commit)
+	if err != nil {
+		return statuses, meta, err
 	}
 
-	return commit, meta, err
+	err = json.Unmarshal(contents, &statuses)
+
+	return statuses, meta, err
 }
 
-type CommitRef struct {
-	Id   string `json:"id" yaml:"id"`
-	Sha  string `json:"sha" yaml:"sha"`
-	Type string `json:"type" yaml:"type"`
-}
+// Create a commit and push with multiple files and actions
+func (g *Gitlab) CreateCommit(id string, commitOpts *CreateCommitOptions) (*Commit, *ResponseMeta, error) {
+	// get http url
+	u := g.ResourceUrl(CreateCommitApiPath, map[string]string{":id": id})
 
-type CommitRefCollection struct {
-	Items []*CommitRef
-}
-
-func (c *CommitRefCollection) RenderJson(w io.Writer) error {
-	return renderJson(w, c.Items)
-}
-
-func (c *CommitRefCollection) RenderYaml(w io.Writer) error {
-	return renderYaml(w, c.Items)
-}
-
-func (g *Gitlab) ProjectCommitRefs(projectId, sha string, o *PaginationOptions) (*CommitRefCollection, *ResponseMeta, error) {
-	u := g.ResourceUrlQ(ProjectCommitRefsApiPath, map[string]string{
-		":id":  projectId,
-		":sha": sha,
-	}, o)
-
-	collection := new(CommitRefCollection)
-
-	contents, meta, err := g.buildAndExecRequest("GET", u.String(), nil)
-	if err == nil {
-		err = json.Unmarshal(contents, &collection.Items)
+	commitJson, err := json.Marshal(commitOpts)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return collection, meta, err
-}
-
-type CommitStatus struct {
-	Id           int    `json:"id" yaml:"id"`
-	Ref          string `json:"ref" yaml:"ref"`
-	Status       string `json:"status" yaml:"status"`
-	CreatedAtRaw string `json:"created_at" yaml:"created_at"`
-	StartedAtRaw string `json:"started_at" yaml:"started_at"`
-	Name         string `json:"name" yaml:"name"`
-	AllowFailure bool   `json:"allow_failure" yaml:"allow_failure"`
-	Author       struct {
-		Id        int    `json:"id"`
-		Name      string `json:"name"`
-		Username  string `json:"username"`
-		State     string `json:"state"`
-		WebUrl    string `json:"web_url"`
-		AvatarUrl string `json:"avatar_url"`
-	} `json:"author" yaml:"author"`
-	Description   string `json:"description" yaml:"description"`
-	Sha           string `json:"sha" yaml:"sha"`
-	TargetURL     string `json:"target_url" yaml:"target_url"`
-	FinishedAtRaw string `json:"finished_at" yaml:"finished_at"`
-}
-
-type CommitStatusCollection struct {
-	Items []*CommitStatus
-}
-
-func (c *CommitStatusCollection) RenderJson(w io.Writer) error {
-	return renderJson(w, c.Items)
-}
-
-func (c *CommitStatusCollection) RenderYaml(w io.Writer) error {
-	return renderYaml(w, c.Items)
-}
-
-func (g *Gitlab) ProjectCommitStatuses(projectId, sha string, o *PaginationOptions) (*CommitStatusCollection, *ResponseMeta, error) {
-	u := g.ResourceUrlQ(ProjectCommitStatusesApiPath, map[string]string{
-		":id":  projectId,
-		":sha": sha,
-	}, o)
-
-	collection := new(CommitStatusCollection)
-
-	contents, meta, err := g.buildAndExecRequest("GET", u.String(), nil)
+	var createCommit *Commit
+	contents, meta, err := g.buildAndExecRequest("POST", u.String(), commitJson)
 	if err == nil {
-		err = json.Unmarshal(contents, &collection.Items)
+		err = json.Unmarshal(contents, &createCommit)
 	}
 
-	return collection, meta, err
+	return createCommit, meta, err
 }

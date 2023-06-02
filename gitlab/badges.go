@@ -2,7 +2,6 @@ package gitlab
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"strconv"
 )
@@ -43,8 +42,6 @@ func (c *BadgeCollection) RenderYaml(w io.Writer) error {
 
 func (g *Gitlab) ProjectBadges(projectId string, o *PaginationOptions) (*BadgeCollection, *ResponseMeta, error) {
 	u := g.ResourceUrlQ(ProjectBadgesApiPath, map[string]string{":id": projectId}, o)
-
-	fmt.Println(u.String())
 
 	collection := new(BadgeCollection)
 	badges := make([]*Badge, 0)
