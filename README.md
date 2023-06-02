@@ -1,4 +1,4 @@
-# go-gitlab-client
+# gitlab-client
 
 [![Build Status](https://travis-ci.org/plouc/go-gitlab-client.png?branch=v2)](https://travis-ci.org/plouc/go-gitlab-client)
 
