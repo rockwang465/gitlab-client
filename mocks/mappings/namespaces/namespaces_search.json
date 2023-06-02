@@ -1,0 +1,17 @@
+{
+  "request": {
+    "path": "/api/v4/namespaces",
+    "method": "GET",
+    "query": {
+      "search": "twitter"
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "namespaces/namespaces_search.json",
+    "headers": {
+      "X-Page": "1",
+      "X-Per-Page": "10"
+    }
+  }
+}

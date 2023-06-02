@@ -1,0 +1,14 @@
+{
+  "request": {
+    "path": "/api/v4/namespaces",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "namespaces/namespaces.json",
+    "headers": {
+      "X-Page": "1",
+      "X-Per-Page": "10"
+    }
+  }
+}

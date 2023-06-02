@@ -1,0 +1,14 @@
+{
+  "request": {
+    "path": "/api/v4/groups/1/members",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "members/members.json",
+    "headers": {
+      "X-Page": "1",
+      "X-Per-Page": "10"
+    }
+  }
+}

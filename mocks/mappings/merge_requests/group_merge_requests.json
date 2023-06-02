@@ -1,0 +1,14 @@
+{
+  "request": {
+    "path": "/api/v4/groups/1/merge_requests",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "merge_requests/merge_requests.json",
+    "headers": {
+      "X-Page": "1",
+      "X-Per-Page": "10"
+    }
+  }
+}

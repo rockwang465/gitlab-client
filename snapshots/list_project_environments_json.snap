@@ -1,0 +1,32 @@
+Fetching project environments (project id: 1)…
+[
+  {
+    "id": 1,
+    "name": "dev",
+    "external_url": "http://dev-api.fake.io",
+    "slug": "dev"
+  },
+  {
+    "id": 2,
+    "name": "staging",
+    "external_url": "http://staging-api.fake.io",
+    "slug": "staging"
+  },
+  {
+    "id": 3,
+    "name": "prod",
+    "external_url": "http://prod-api.fake.io",
+    "slug": "prod"
+  },
+  {
+    "id": 4,
+    "name": "preprod",
+    "slug": "preprod"
+  },
+  {
+    "id": 5,
+    "name": "prod",
+    "external_url": "http://api.fake.io",
+    "slug": "prod"
+  }
+]

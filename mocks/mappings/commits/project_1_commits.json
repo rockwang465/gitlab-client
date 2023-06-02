@@ -1,0 +1,14 @@
+{
+  "request": {
+    "path": "/api/v4/projects/1/repository/commits",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "commits/commits.json",
+    "headers": {
+      "X-Page": "1",
+      "X-Per-Page": "10"
+    }
+  }
+}
